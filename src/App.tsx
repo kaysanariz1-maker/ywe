@@ -293,34 +293,29 @@ export default function App() {
           isOpen: true,
           provider,
           stage: 1,
-          statusText: 'Opening secure Google account authentication pop-up...'
+          statusText: 'Redirecting to secure Google account authentication...'
         });
-        const result = await signInWithPopup(firebaseAuth, googleProvider);
-        const user = result.user;
 
-        const session = {
-          name: user.displayName || 'Google User',
-          email: user.email || '',
-          phone: user.phoneNumber || '01799999999',
-          provider: 'Google' as const,
-          photoURL: user.photoURL || ''
-        };
-
-        setCustomerSession(session);
-        setIsCustomerModalOpen(false);
-        setOauthOverlay(null);
-
-        if (pendingCartAction) {
-          pendingCartAction();
-          setPendingCartAction(null);
+        // Explicitly set the authDomain to the primary whitelisted fallback to avoid Vercel preview domain mismatches
+        if (firebaseAuth.app && firebaseAuth.app.options) {
+          firebaseAuth.app.options.authDomain = 'dev-bongo-bwjrd.firebaseapp.com';
         }
+        if ((firebaseAuth as any).config) {
+          (firebaseAuth as any).config.authDomain = 'dev-bongo-bwjrd.firebaseapp.com';
+        }
+
+        // Trigger the redirect mechanic instead of popups for iframe/sandbox safety
+        await signInWithRedirect(firebaseAuth, googleProvider);
+
+        // Note: The execution will redirect away from the page here.
+        // The getRedirectResult listener at the root level intercepts the return callback.
       } catch (error: any) {
-        console.error('Google Sign-In Popup Error:', error);
+        console.error('Google Sign-In Redirect Error:', error);
         setOauthOverlay({
           isOpen: true,
           provider,
           stage: 1,
-          statusText: `Google Authentication Error: ${error.message || 'The authentication pop-up was closed or blocked.'}`
+          statusText: `Google Authentication Error: ${error.message || 'The authentication redirect failed.'}`
         });
         setTimeout(() => {
           setOauthOverlay(null);
