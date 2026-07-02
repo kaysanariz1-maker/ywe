@@ -1,0 +1,8 @@
+{
+  "name": "Remix: Believer Sign E-Commerce Store",
+  "description": "Premium Islamic apparel \u0026 lifestyle brand e-commerce storefront, order placement tracking, instant WhatsApp checkout sync, cost calculator and interactive 50,000 BDT professional agency project proposal.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

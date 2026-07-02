@@ -1,0 +1,147 @@
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-serif: "Cinzel", Georgia, serif;
+  --font-sans: "Inter", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+}
+
+@layer utilities {
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
+  }
+  .scrollbar-none {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
+
+/* Base style additions for a luxury feel */
+body {
+  font-family: var(--font-sans);
+  background-color: #faf9f6;
+  color: #1c1917;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* --- THEME CUSTOM OVERRIDES --- */
+
+/* --- BLACK THEME OVERRIDES --- */
+.theme-black,
+.theme-black body,
+.theme-black #app-wrapper,
+.theme-black main,
+.theme-black #success-screen,
+.theme-black #banner-ads-workspace,
+.theme-black #admin-panel,
+.theme-black .bg-stone-50,
+.theme-black .bg-stone-100/50,
+.theme-black .bg-stone-100 {
+  background-color: #0c0a09 !important; /* stone-950 */
+  color: #faf9f6 !important;
+}
+
+.theme-black #main-header,
+.theme-black .bg-white {
+  background-color: #1c1917 !important; /* stone-900 */
+}
+
+/* Override text elements mapped to stone colors to ensure high contrast */
+.theme-black .text-stone-900,
+.theme-black .text-stone-800,
+.theme-black .text-stone-700,
+.theme-black h1,
+.theme-black h2,
+.theme-black h3,
+.theme-black h4,
+.theme-black h5,
+.theme-black h6 {
+  color: #faf9f6 !important;
+}
+
+.theme-black .text-stone-600,
+.theme-black .text-stone-500,
+.theme-black label {
+  color: #d6d3d1 !important; /* stone-300 */
+}
+
+.theme-black .text-stone-400 {
+  color: #a8a29e !important; /* stone-400 */
+}
+
+/* Border overrides */
+.theme-black .border-stone-100,
+.theme-black .border-stone-200,
+.theme-black .border-stone-200\/50,
+.theme-black .border-stone-100\/80,
+.theme-black .divide-stone-100 > * {
+  border-color: #292524 !important; /* stone-800 */
+}
+
+/* Nav elements */
+.theme-black nav.bg-stone-100 {
+  background-color: #292524 !important;
+}
+
+.theme-black .bg-white.text-emerald-800 {
+  background-color: #0c0a09 !important;
+  color: #34d399 !important;
+}
+
+/* Inputs / select */
+.theme-black input,
+.theme-black select,
+.theme-black textarea {
+  background-color: #292524 !important;
+  border-color: #44403c !important;
+  color: #faf9f6 !important;
+}
+
+.theme-black input::placeholder {
+  color: #78716c !important;
+}
+
+/* Table elements */
+.theme-black tr:hover {
+  background-color: #1c1917 !important;
+}
+
+.theme-black thead.bg-stone-50 {
+  background-color: #292524 !important;
+}
+
+/* --- WHITE THEME OVERRIDES --- */
+.theme-white,
+.theme-white body,
+.theme-white #app-wrapper,
+.theme-white main,
+.theme-white .bg-stone-50 {
+  background-color: #ffffff !important;
+  color: #1c1917 !important;
+}
+
+.theme-white .bg-stone-100 {
+  background-color: #f5f5f4 !important;
+}
+
+.theme-white #main-header,
+.theme-white .bg-white {
+  background-color: #ffffff !important;
+}
+
+.theme-white .border-stone-100,
+.theme-white .border-stone-200,
+.theme-white .border-stone-200\/50,
+.theme-white .border-stone-100\/80 {
+  border-color: #f5f5f4 !important;
+}
+
