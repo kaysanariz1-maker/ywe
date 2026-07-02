@@ -10,8 +10,7 @@ import AdminDashboard from './components/AdminDashboard';
 import ProposalViewer from './components/ProposalViewer';
 import AdminInitiation from './components/AdminInitiation';
 import { ShoppingBag, ChevronRight, CheckCircle, Smartphone, Award, ExternalLink, ArrowRight, ShieldCheck, Sparkles, X, Shield, Palette, Check, User } from 'lucide-react';
-import { auth as firebaseAuth, googleProvider, signInWithPopup, signInWithRedirect, getRedirectResult } from './lib/firebase';
-
+import { supabase } from './lib/supabase';
 const INITIAL_ADMINS: AuthenticatedAdmin[] = [
   {
     id: 'dev-admin',
@@ -137,44 +136,33 @@ export default function App() {
     }
   }, [customerSession]);
 
-  // Synchronize Firebase Authentication state on load
+  // Synchronize Supabase Authentication state on load
   useEffect(() => {
-    // Check redirect result first for iframe fallback resilience
-    getRedirectResult(firebaseAuth)
-      .then((result) => {
-        if (result?.user) {
-          const user = result.user;
-          const session = {
-            name: user.displayName || 'Google User',
-            email: user.email || '',
-            phone: user.phoneNumber || '01799999999',
-            provider: 'Google' as const,
-            photoURL: user.photoURL || ''
-          };
-          setCustomerSession(session);
-        }
-      })
-      .catch((error) => console.error("Redirect auth error:", error));
-
-    const unsubscribe = firebaseAuth.onAuthStateChanged((user) => {
-      if (user) {
-        setCustomerSession({
-          name: user.displayName || 'Google User',
+    // Listen for auth state changes (includes redirect returns)
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (session?.user) {
+        const user = session.user;
+        const customerData = {
+          name: user.user_metadata?.full_name || 'Google User',
           email: user.email || '',
-          phone: user.phoneNumber || '01799999999',
-          provider: 'Google',
-          photoURL: user.photoURL || ''
-        });
+          phone: user.phone || '01799999999',
+          provider: 'Google' as const,
+          photoURL: user.user_metadata?.avatar_url || ''
+        };
+        setCustomerSession(customerData);
       }
     });
-    return () => unsubscribe();
+
+    return () => {
+      subscription.unsubscribe();
+    };
   }, []);
 
   const handleCustomerSignOut = async () => {
     try {
-      await firebaseAuth.signOut();
+      await supabase.auth.signOut();
     } catch (e) {
-      console.error('Failed to sign out from Firebase', e);
+      console.error('Failed to sign out from Supabase', e);
     }
     setCustomerSession(null);
   };
@@ -296,19 +284,15 @@ export default function App() {
           statusText: 'Redirecting to secure Google account authentication...'
         });
 
-        // Explicitly set the authDomain to the primary whitelisted fallback to avoid Vercel preview domain mismatches
-        if (firebaseAuth.app && firebaseAuth.app.options) {
-          firebaseAuth.app.options.authDomain = 'dev-bongo-bwjrd.firebaseapp.com';
-        }
-        if ((firebaseAuth as any).config) {
-          (firebaseAuth as any).config.authDomain = 'dev-bongo-bwjrd.firebaseapp.com';
-        }
+        const { data, error } = await supabase.auth.signInWithOAuth({
+          provider: 'google',
+          options: {
+            redirectTo: window.location.origin
+          }
+        });
 
-        // Trigger the redirect mechanic instead of popups for iframe/sandbox safety
-        await signInWithRedirect(firebaseAuth, googleProvider);
-
-        // Note: The execution will redirect away from the page here.
-        // The getRedirectResult listener at the root level intercepts the return callback.
+        if (error) throw error;
+        
       } catch (error: any) {
         console.error('Google Sign-In Redirect Error:', error);
         setOauthOverlay({
